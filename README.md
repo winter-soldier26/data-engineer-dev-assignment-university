@@ -37,14 +37,14 @@ graph LR
    ```sql
    CREATE VOLUME IF NOT EXISTS workspace.default.university_chapters;
    ```
-   This project uses the `workspace.default` catalog/schema, already available by default in most Databricks workspaces. If your workspace uses a different catalog/schema, update `BASE_PATH` in `notebooks/00_config.py` accordingly.
+   This project uses the `workspace.default` catalog/schema, already available by default in most Databricks workspaces. If your workspace uses a different catalog/schema, update `BASE_PATH` in `notebooks/00_config.ipynb` accordingly.
 3. Open and run the notebooks **in this order**, top to bottom ("Run All" is recommended for each):
    ```
-   notebooks/00_config.py           # shared constants (imported by others via %run, not run directly)
-   notebooks/01_ingest_bronze.py    # calls the API, writes raw data to Bronze
-   notebooks/02_bronze_to_silver.py # flattens, applies DQ rules, writes Silver + Quarantine
-   notebooks/03_silver_to_gold.py   # publishes Gold via idempotent MERGE
-   notebooks/04_tests.py            # automated checks against the latest run
+   notebooks/00_config.ipynb           # shared constants (imported by others via %run, not run directly)
+   notebooks/01_ingest_bronze.ipynb    # calls the API, writes raw data to Bronze
+   notebooks/02_bronze_to_silver.ipynb # flattens, applies DQ rules, writes Silver + Quarantine
+   notebooks/03_silver_to_gold.ipynb   # publishes Gold via idempotent MERGE
+   notebooks/04_tests.ipynb            # automated checks against the latest run
    ```
 4. Re-running the full sequence is safe — Gold is published via `MERGE` (upsert by `chapter_id`), so repeat runs update existing rows rather than duplicating them.
 
@@ -77,7 +77,7 @@ See [`CONTRACT.md`](./CONTRACT.md) for the full contract: schema, freshness SLA,
 
 ## Testing
 
-`notebooks/04_tests.py` runs automated assertions against the most recent pipeline run:
+`notebooks/04_tests.ipynb` runs automated assertions against the most recent pipeline run:
 - No quarantined `chapter_id` appears in Gold
 - At least one `WARNING`-status row exists in Gold with the correct reason code (verifying DQ-W1 end-to-end)
 - Gold's schema exactly matches the published contract columns — no technical/internal fields leak through
